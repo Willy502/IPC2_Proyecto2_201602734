@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
 from tkinter import messagebox
+from src.models.project_singleton import *
 
 class Gui:
 
@@ -60,9 +61,9 @@ class Gui:
             entry.configure(state=tk.DISABLED)
 
             if option_clicked == 1:
-                print("OPTION 1")
+                ProjectSingleton().file_machine = file
             elif option_clicked == 2:
-                print("OPTION 2")
+                ProjectSingleton().file_simulation = file
 
         else:
             messagebox.showinfo("Error", "No se ha cargado ningún archivo")
@@ -70,6 +71,6 @@ class Gui:
     def on_change_tab(self, event):
         name = self.tabControl.select()
         index = self.tabControl.index(name)
-        if index == 1:
+        if index == 1 and (ProjectSingleton().file_machine is None or ProjectSingleton().file_simulation is None):
             self.tabControl.select(0)
             messagebox.showinfo("Error", "No has cargado la máquina o el archivo de simulación")
