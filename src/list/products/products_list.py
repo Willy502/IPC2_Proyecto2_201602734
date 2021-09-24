@@ -13,3 +13,11 @@ class ProductsList:
         while current.next:
             current = current.next
         current.next = ProductsNode(product = product)
+
+    def search(self, name):
+        current = self.first
+        while current != None:
+            if current.product.name == name:
+                return current.product
+            current = current.next
+        return None

@@ -4,6 +4,7 @@ from tkinter import filedialog as fd
 from tkinter import messagebox
 from src.models.project_singleton import *
 from src.controllers.machine_controller import *
+from src.controllers.simulation_controller import *
 
 class Gui:
 
@@ -80,12 +81,10 @@ class Gui:
 
             if option_clicked == 1:
                 ProjectSingleton().file_machine = file
-                MachineController().build_production_line_list()
+                MachineController()
             elif option_clicked == 2:
-                if ProjectSingleton().file_machine != None:
-                    ProjectSingleton().file_simulation = file
-                else:
-                    messagebox.showinfo("Error", "Primero debes cargar una máquina")
+                ProjectSingleton().file_simulation = file
+                SimulationController()
 
         else:
             messagebox.showinfo("Error", "No se ha cargado ningún archivo")
