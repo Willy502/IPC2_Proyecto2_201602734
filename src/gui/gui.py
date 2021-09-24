@@ -12,6 +12,7 @@ class Gui:
     def build_gui(self):
         self.root = tk.Tk()
         self.root.title("Línea de ensamblaje")
+        
         self.tabControl = ttk.Notebook(self.root, width = 500, height = 500)
   
         tab1 = ttk.Frame(self.tabControl)
@@ -23,6 +24,8 @@ class Gui:
         self.tabControl.add(tab3, text ='Ayuda')
         self.tabControl.pack(expand = True, fill = tk.BOTH)
 
+        #TAB 1
+
         entry_machine = ttk.Entry(tab1, state = tk.DISABLED)
         entry_machine.grid(column = 0, row = 0)
         button_machine = ttk.Button(tab1, text = "Cargar máquina", command = lambda:self.on_click(option_clicked=1, entry=entry_machine)).grid(column = 1, row = 0)
@@ -30,12 +33,22 @@ class Gui:
         entry_simulation.grid(column = 0, row = 1)
         button_simulation = ttk.Button(tab1, text = "Cargar simulación", command = lambda:self.on_click(option_clicked=2, entry=entry_simulation)).grid(column = 1, row = 1)
 
-        ttk.Label(tab2,
-                text ="Lets dive into the\
-                world of computers").grid(column = 0,
-                                            row = 0, 
-                                            padx = 30,
-                                            pady = 30)
+        #TAB 2
+
+        ttk.Label(tab2, text ="Product Name").grid(column = 0, row = 0)
+        ttk.Label(tab2, text ="Componentes necesarios").grid(column = 0, row = 1)
+
+        tv = ttk.Treeview(tab2)
+        tv.grid(column = 1, row = 0)
+        tv['columns'] = ('line1', 'linen')
+        tv.heading("#0", text='Tiempo', anchor='w')
+        tv.column("#0", anchor="w")
+        tv.heading('line1', text='Linea 1')
+        tv.column('line1', anchor='center', width=100)
+        tv.heading('linen', text='Linea N')
+        tv.column('linen', anchor='center', width=100)
+
+        #TAB 3
 
         ttk.Label(tab3, text =  self.information()).grid(column = 0, row = 0)
 
