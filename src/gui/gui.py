@@ -39,9 +39,10 @@ class Gui:
 
         ttk.Label(tab2, text ="Product Name").grid(column = 0, row = 0)
         ttk.Label(tab2, text ="Componentes necesarios").grid(column = 0, row = 1)
+        button_run_simulation = ttk.Button(tab2, text = "Ejecutar simulación", command = lambda:self.on_click(option_clicked=3)).grid(column = 1, row = 0)
 
         tv = ttk.Treeview(tab2)
-        tv.grid(column = 1, row = 0)
+        tv.grid(column = 1, row = 1)
         tv['columns'] = ('line1', 'linen')
         tv.heading("#0", text='Tiempo', anchor='w')
         tv.column("#0", anchor="w")
@@ -64,10 +65,14 @@ class Gui:
         info += "Sección  \n"
         return info
 
-    def on_click(self, option_clicked, entry):
+    def on_click(self, option_clicked, entry = None):
 
         if option_clicked == 2 and ProjectSingleton().file_machine == None:
             messagebox.showinfo("Error", "Primero debes cargar una máquina")
+            return
+
+        if option_clicked == 3:
+            self.run_simulation()
             return
 
         file = fd.askopenfilename(title='Open file', filetypes=[('text files', '*.xml')])
@@ -95,3 +100,11 @@ class Gui:
         if index == 1 and (ProjectSingleton().file_machine is None or ProjectSingleton().file_simulation is None):
             self.tabControl.select(0)
             messagebox.showinfo("Error", "No has cargado la máquina o el archivo de simulación")
+            return
+
+    def run_simulation(self):
+        simulation = ProjectSingleton().simulation
+        products_list = simulation.products_list
+        for i in range(0, products_list.size()):
+            product = products_list.get(position = i)
+            print(product.build_instructions)

@@ -1,26 +1,18 @@
-from .products_node import *
+from .g_node import *
 
-class ProductsList:
+class GList:
 
     def __init__(self):
         self.first = None
 
-    def insert(self, product):
+    def insert(self, content):
         if self.first is None:
-            self.first = ProductsNode(product = product)
+            self.first = GNode(content = content)
             return
         current = self.first
         while current.next:
             current = current.next
-        current.next = ProductsNode(product = product)
-
-    def search(self, name):
-        current = self.first
-        while current != None:
-            if current.product.name == name:
-                return current.product
-            current = current.next
-        return None
+        current.next = GNode(content = content)
 
     def size(self):
         length = 0
@@ -36,6 +28,6 @@ class ProductsList:
         while current != None:
             length += 1
             if position == length - 1:
-                return current.product
+                return current.content
             current = current.next
-        raise Exception('Products list out of range exception')
+        raise Exception('GList out of range exception')
