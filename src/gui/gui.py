@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import filedialog as fd
 from tkinter import messagebox
 from src.models.project_singleton import *
+from src.controllers.machine_controller import *
 
 class Gui:
 
@@ -64,6 +65,10 @@ class Gui:
 
     def on_click(self, option_clicked, entry):
 
+        if option_clicked == 2 and ProjectSingleton().file_machine == None:
+            messagebox.showinfo("Error", "Primero debes cargar una máquina")
+            return
+
         file = fd.askopenfilename(title='Open file', filetypes=[('text files', '*.xml')])
 
         if file != "":
@@ -75,8 +80,12 @@ class Gui:
 
             if option_clicked == 1:
                 ProjectSingleton().file_machine = file
+                MachineController().build_production_line_list()
             elif option_clicked == 2:
-                ProjectSingleton().file_simulation = file
+                if ProjectSingleton().file_machine != None:
+                    ProjectSingleton().file_simulation = file
+                else:
+                    messagebox.showinfo("Error", "Primero debes cargar una máquina")
 
         else:
             messagebox.showinfo("Error", "No se ha cargado ningún archivo")

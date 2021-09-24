@@ -3,6 +3,7 @@ class ProjectSingleton(object):
     __instance = None
     file_machine = None
     file_simulation = None
+    machine = None
 
     def __new__(cls):
         if ProjectSingleton.__instance is None:
