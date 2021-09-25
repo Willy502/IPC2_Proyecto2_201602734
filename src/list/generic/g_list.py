@@ -5,7 +5,7 @@ class GList:
     def __init__(self):
         self.first = None
 
-    def insert(self, content):
+    def add(self, content):
         if self.first is None:
             self.first = GNode(content = content)
             return

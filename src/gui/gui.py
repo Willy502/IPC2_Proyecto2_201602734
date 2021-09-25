@@ -5,6 +5,7 @@ from tkinter import messagebox
 from src.models.project_singleton import *
 from src.controllers.machine_controller import *
 from src.controllers.simulation_controller import *
+from src.list.generic.g_list import *
 
 class Gui:
 
@@ -104,7 +105,31 @@ class Gui:
 
     def run_simulation(self):
         simulation = ProjectSingleton().simulation
+        machine = ProjectSingleton().machine
         products_list = simulation.products_list
+        production_line_list = machine.production_lines_list
+        qt_production_lines = machine.qt_production_lines
+        position_list = GList()
+
+        for i in range(0, qt_production_lines):
+            position_list.add(0)
+
         for i in range(0, products_list.size()):
+            print("PRODUCT ----------", i)
             product = products_list.get(position = i)
-            print(product.build_instructions)
+            instructions_list = GList()
+            line_comp = ""
+
+            for letter in product.build_instructions:
+                if ord(letter) == 32:
+                    instructions_list.add(line_comp)
+                    line_comp = ""
+                    continue
+                line_comp += letter
+            instructions_list.add(line_comp)
+            
+            for index in range(0, instructions_list.size()):
+                pass
+                #print(instructions_list.get(position = index))
+        
+        # 112 -> p
