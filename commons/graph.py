@@ -16,7 +16,8 @@ class Graph:
                 instructions_list.add(line_comp)
                 line_comp = ""
                 continue
-            line_comp += letter
+            if letter != "p":
+                line_comp += letter
         instructions_list.add(line_comp)
 
         counter_inst = 0
