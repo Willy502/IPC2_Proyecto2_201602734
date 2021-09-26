@@ -192,9 +192,13 @@ class Gui:
                                 if prod_line.assemble == True:
                                     # sleep assemble time
                                     print("Ensamblando linea:", prod_line.number)
-                                    prod_line.assemble = False
-                                    assembled = True
-                                    prod_line.pending.delete(position = 0)
+                                    if prod_line.missing_assembly_time == 0:
+                                        prod_line.assemble = False
+                                        assembled = True
+                                        prod_line.missing_assembly_time = prod_line.assembly_time - 1
+                                        prod_line.pending.delete(position = 0)
+                                    else:
+                                        prod_line.missing_assembly_time -= 1
                                 else:
                                     print("Linea", prod_line.number, "no hacer nada")
                     print("-----------")

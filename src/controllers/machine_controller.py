@@ -42,6 +42,7 @@ class MachineController:
                             pr_l.qt_components = int(production_element.text)
                         elif production_element.tag == "TiempoEnsamblaje":
                             pr_l.assembly_time = int(production_element.text)
+                            pr_l.missing_assembly_time = int(production_element.text) - 1
                     
                     production_line_list.insert(production_line = pr_l)
 
