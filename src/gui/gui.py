@@ -9,6 +9,7 @@ from src.controllers.machine_controller import *
 from src.controllers.simulation_controller import *
 from src.list.generic.g_list import *
 from commons.graph import *
+from commons.html import *
 
 class Gui:
 
@@ -260,5 +261,5 @@ class Gui:
                     self.tv.yview_moveto(1)
 
             Graph().build_graph(product = product)
+            Html().build_html_table(product = product, machine = machine)
         messagebox.showinfo("Fin", "Han terminado todos los ensamblajes")
-        # 112 -> p
