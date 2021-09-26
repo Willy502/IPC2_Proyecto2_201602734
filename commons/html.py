@@ -5,6 +5,7 @@ class Html:
 
     def build_html_table(self, product, machine, instructions):
         
+        tiempo = str(instructions.get(instructions.size() - 1).get(0))
         report = ''
         report += '<div class="col-12">\n'
         report += '<table class="table">\n'
@@ -57,6 +58,9 @@ class Html:
                         <hr />
                         <div class="row">
                             ''' + report + '''
+                        </div>
+                        <div class="row">
+                            <h3>El tiempo optimo para crear el producto llamado ''' + product.name + ''' es ''' + tiempo + ''' segundos</h3>
                         </div>
                     </div>
                 </div>
