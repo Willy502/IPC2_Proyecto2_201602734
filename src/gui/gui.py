@@ -42,8 +42,10 @@ class Gui:
         self.p_name = StringVar()
         self.p_name.set('')
         ttk.Label(tab2, textvariable = self.p_name).grid(column = 0, row = 0)
-        ttk.Label(tab2, text ="Componentes necesarios").grid(column = 0, row = 1)
-        button_run_simulation = ttk.Button(tab2, text = "Ejecutar simulación", command = lambda:self.on_click(option_clicked=3)).grid(column = 1, row = 0)
+        self.combo = ttk.Combobox(tab2, text = "- Seleccionar -", values=[], state="readonly")
+        self.combo.grid(column = 0, row = 1)
+        button_run_simulation_spec = ttk.Button(tab2, text = "Simular", command = lambda:self.on_click(option_clicked=4)).grid(column = 0, row = 2)
+        button_run_simulation = ttk.Button(tab2, text = "Ejecutar archivo de simulación", command = lambda:self.on_click(option_clicked=3)).grid(column = 1, row = 0)
 
         self.tv = ttk.Treeview(tab2, selectmode='browse')
         self.tv.grid(column = 1, row = 1)
@@ -69,7 +71,17 @@ class Gui:
             return
 
         if option_clicked == 3:
-            self.run_simulation()
+            if ProjectSingleton().file_simulation is None:
+                messagebox.showinfo("Error", "No has cargado ningún archivo de simulación")
+            else:
+                self.run_simulation()
+            return
+
+        if option_clicked == 4:
+            if self.combo.current() != -1:
+                self.run_simulation(product_index = self.combo.current())
+            else:
+                messagebox.showinfo("Error", "Debes seleccionar un producto para simular")
             return
 
         file = fd.askopenfilename(title='Open file', filetypes=[('text files', '*.xml')])
@@ -95,17 +107,24 @@ class Gui:
         name = self.tabControl.select()
         index = self.tabControl.index(name)
         if index == 1:
-            if ProjectSingleton().file_machine is None or ProjectSingleton().file_simulation is None:
+            if ProjectSingleton().file_machine is None:
                 self.tabControl.select(0)
-                messagebox.showinfo("Error", "No has cargado la máquina o el archivo de simulación")
+                messagebox.showinfo("Error", "No has cargado la máquina")
                 return
             else:
 
                 lines = []
                 machine = ProjectSingleton().machine
                 production_line_list = machine.production_lines_list
+                products_combo_list = machine.products_list
                 for line_index in range(0, production_line_list.size()):
                     lines.append(production_line_list.get(line_index).number)
+
+                self.combo["values"] = []
+                for prod_index in range(0, products_combo_list.size()):
+                    self.combo["values"] = list(self.combo["values"]) + [str(products_combo_list.get(prod_index).name)]
+
+                self.combo.update()
 
                 self.tv['columns'] = lines
                 self.tv.heading("#0", text='Tiempo (s)')
@@ -114,15 +133,22 @@ class Gui:
                     self.tv.heading(lines[i], text='Linea ' + str(i + 1))
                     self.tv.column(lines[i], anchor='center', minwidth=100, stretch=True)
 
-    def run_simulation(self):
+    def run_simulation(self, product_index = None):
         simulation = ProjectSingleton().simulation
         machine = ProjectSingleton().machine
-        products_list = simulation.products_list
+        products_list = ProductsList()
+        if product_index is None:
+            products_list = simulation.products_list
+        else:
+            products_list = machine.products_list
         production_line_list = machine.production_lines_list
         position_list = GList()
 
         # each product
         for i in range(0, products_list.size()):
+            if product_index != None:
+                if product_index != i:
+                    continue
             product = products_list.get(position = i)
             messagebox.showinfo("Inicio", "Iniciando ensamblaje de " + product.name)
             self.counter = 0
