@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog as fd
 from tkinter import messagebox
@@ -38,8 +39,9 @@ class Gui:
         button_simulation = ttk.Button(tab1, text = "Cargar simulación", command = lambda:self.on_click(option_clicked=2, entry=entry_simulation)).grid(column = 1, row = 1)
 
         #TAB 2
-
-        ttk.Label(tab2, text ="Product Name").grid(column = 0, row = 0)
+        self.p_name = StringVar()
+        self.p_name.set('')
+        ttk.Label(tab2, textvariable = self.p_name).grid(column = 0, row = 0)
         ttk.Label(tab2, text ="Componentes necesarios").grid(column = 0, row = 1)
         button_run_simulation = ttk.Button(tab2, text = "Ejecutar simulación", command = lambda:self.on_click(option_clicked=3)).grid(column = 1, row = 0)
 
@@ -57,7 +59,7 @@ class Gui:
         info = "Wilfred Alejandro Barrios Ola \n"
         info += "201602734 \n"
         info += "Introducción a la programación y computación 2 \n"
-        info += "Sección  \n"
+        info += "Sección E \n"
         return info
 
     def on_click(self, option_clicked, entry = None):
@@ -106,7 +108,7 @@ class Gui:
                     lines.append(production_line_list.get(line_index).number)
 
                 self.tv['columns'] = lines
-                self.tv.heading("#0", text='Tiempo')
+                self.tv.heading("#0", text='Tiempo (s)')
                 self.tv.column("#0", anchor="center", width=100)
                 for i in range(0, len(lines)):
                     self.tv.heading(lines[i], text='Linea ' + str(i + 1))
@@ -121,6 +123,8 @@ class Gui:
 
         # each product
         for i in range(0, products_list.size()):
+            product = products_list.get(position = i)
+            messagebox.showinfo("Inicio", "Iniciando ensamblaje de " + product.name)
             self.counter = 0
             self.tv.delete(*self.tv.get_children())
             for line_index in range(0, production_line_list.size()):
@@ -129,7 +133,9 @@ class Gui:
                     production_line_list.get(position = line_index).position = 0
 
             print("PRODUCT ----------", i)
-            product = products_list.get(position = i)
+            self.p_name.set(product.name)
+            self.root.update()
+            
             instructions_list = GList()
             line_comp = ""
 
@@ -194,18 +200,18 @@ class Gui:
                         if prod_line.pending.size() > 0:
                             if prod_line.pending.get(position = 0) > prod_line.position:
                                 print("Moviendo linea", prod_line.number, "1 espacio para adelante")
-                                lines_info.append("Moviendo 1 espacio para adelante")
                                 prod_line.position += 1
+                                lines_info.append("Mover brazo - componente " + str(prod_line.position))
                             elif prod_line.pending.get(position = 0) < prod_line.position:
                                 print("Moviendo linea", prod_line.number, "1 espacio para atras")
-                                lines_info.append("Moviendo 1 espacio para atras")
                                 prod_line.position -= 1
+                                lines_info.append("Mover brazo - componente " + str(prod_line.position))
                             else:
                                 # Ensamblar
                                 if prod_line.assemble == True:
                                     # sleep assemble time
-                                    print("Ensamblando linea:", prod_line.number)
-                                    lines_info.append("Ensamblando linea")
+                                    print("Ensamblando en linea:", prod_line.number)
+                                    lines_info.append("Ensamblar - componente " + str(prod_line.pending.get(position = 0)))
                                     if prod_line.missing_assembly_time == 0:
                                         prod_line.assemble = False
                                         assembled = True
@@ -225,5 +231,6 @@ class Gui:
                     self.tv.insert('', 'end', text=str(self.counter), values=lines_info)
                     self.tv.update()
                     self.tv.yview_moveto(1)
-        
+
+        messagebox.showinfo("Fin", "Han terminado todos los ensamblajes")
         # 112 -> p
