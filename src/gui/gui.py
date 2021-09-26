@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
 from tkinter import messagebox
+import time
 from src.models.project_singleton import *
 from src.controllers.machine_controller import *
 from src.controllers.simulation_controller import *
@@ -108,18 +109,16 @@ class Gui:
         machine = ProjectSingleton().machine
         products_list = simulation.products_list
         production_line_list = machine.production_lines_list
-        qt_production_lines = machine.qt_production_lines
         position_list = GList()
 
-        for i in range(0, qt_production_lines):
-            position_list.add(0)
-
+        # each product
         for i in range(0, products_list.size()):
             print("PRODUCT ----------", i)
             product = products_list.get(position = i)
             instructions_list = GList()
             line_comp = ""
 
+            # instructions list for a single product
             for letter in product.build_instructions:
                 if ord(letter) == 32:
                     instructions_list.add(line_comp)
@@ -129,7 +128,69 @@ class Gui:
             instructions_list.add(line_comp)
             
             for index in range(0, instructions_list.size()):
-                pass
-                #print(instructions_list.get(position = index))
+                letters_list = GList()
+                for letter in instructions_list.get(position = index):
+                    letters_list.add(letter)
+
+                line = None
+                component = None
+                for index_letter in range(0, letters_list.size()):
+                    
+                    if letters_list.get(index_letter) == "p":
+                        if letters_list.get(index_letter - 2) == "L":
+                            line = letters_list.get(index_letter - 1)
+                            #print("Soy la linea", line)
+                        elif letters_list.get(index_letter - 2) == "C":
+                            #print("Soy componente")
+                            component = letters_list.get(index_letter - 1)
+                        else:
+                            raise Exception("Build string index out of range Exception")
+                
+                p_line = production_line_list.search(number = int(line))
+                
+                if p_line != None:
+                    #print("adding", component, "to line", line)
+                    production_line_list.search(number = int(line)).pending.add(int(component))
+
+            for index in range(0, instructions_list.size()):
+                letters_list = GList()
+                for letter in instructions_list.get(position = index):
+                    letters_list.add(letter)
+
+                line = None
+                for index_letter in range(0, letters_list.size()):
+                    if letters_list.get(index_letter) == "p":
+                        if letters_list.get(index_letter - 2) == "L":
+                            #print("Soy la linea")
+                            line = letters_list.get(index_letter - 1)
+                        elif letters_list.get(index_letter - 2) != "C":
+                            raise Exception("run instructions index out of range Exception")
+                
+                p_line = production_line_list.search(number = int(line))
+                if p_line != None:
+                    production_line_list.search(number = int(line)).assemble = True
+
+                
+                assembled = False
+                while assembled == False:
+                    for line_index in range(0, production_line_list.size()):
+                        prod_line = production_line_list.get(position = line_index)
+                        if prod_line.pending.size() > 0:
+                            if prod_line.pending.get(position = 0) > prod_line.position:
+                                print("Moviendo linea", prod_line.number, "1 espacio para adelante")
+                                prod_line.position += 1
+                            elif prod_line.pending.get(position = 0) < prod_line.position:
+                                print("Moviendo linea", prod_line.number, "1 espacio para atras")
+                                prod_line.position -= 1
+                            else:
+                                # Ensamblar
+                                if prod_line.assemble == True:
+                                    # sleep assemble time
+                                    print("Ensamblando linea:", prod_line.number)
+                                    prod_line.assemble = False
+                                    assembled = True
+                                    prod_line.pending.delete(position = 0)
+
+                    time.sleep(1)
         
         # 112 -> p
