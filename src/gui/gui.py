@@ -43,15 +43,8 @@ class Gui:
         ttk.Label(tab2, text ="Componentes necesarios").grid(column = 0, row = 1)
         button_run_simulation = ttk.Button(tab2, text = "Ejecutar simulación", command = lambda:self.on_click(option_clicked=3)).grid(column = 1, row = 0)
 
-        tv = ttk.Treeview(tab2)
-        tv.grid(column = 1, row = 1)
-        tv['columns'] = ('line1', 'linen')
-        tv.heading("#0", text='Tiempo', anchor='w')
-        tv.column("#0", anchor="w")
-        tv.heading('line1', text='Linea 1')
-        tv.column('line1', anchor='center', width=100)
-        tv.heading('linen', text='Linea N')
-        tv.column('linen', anchor='center', width=100)
+        self.tv = ttk.Treeview(tab2, selectmode='browse')
+        self.tv.grid(column = 1, row = 1)
 
         #TAB 3
 
@@ -99,10 +92,25 @@ class Gui:
     def on_change_tab(self, event):
         name = self.tabControl.select()
         index = self.tabControl.index(name)
-        if index == 1 and (ProjectSingleton().file_machine is None or ProjectSingleton().file_simulation is None):
-            self.tabControl.select(0)
-            messagebox.showinfo("Error", "No has cargado la máquina o el archivo de simulación")
-            return
+        if index == 1:
+            if ProjectSingleton().file_machine is None or ProjectSingleton().file_simulation is None:
+                self.tabControl.select(0)
+                messagebox.showinfo("Error", "No has cargado la máquina o el archivo de simulación")
+                return
+            else:
+
+                lines = []
+                machine = ProjectSingleton().machine
+                production_line_list = machine.production_lines_list
+                for line_index in range(0, production_line_list.size()):
+                    lines.append(production_line_list.get(line_index).number)
+
+                self.tv['columns'] = lines
+                self.tv.heading("#0", text='Tiempo')
+                self.tv.column("#0", anchor="center", width=100)
+                for i in range(0, len(lines)):
+                    self.tv.heading(lines[i], text='Linea ' + str(i + 1))
+                    self.tv.column(lines[i], anchor='center', minwidth=100, stretch=True)
 
     def run_simulation(self):
         simulation = ProjectSingleton().simulation
@@ -113,6 +121,8 @@ class Gui:
 
         # each product
         for i in range(0, products_list.size()):
+            self.counter = 0
+            self.tv.delete(*self.tv.get_children())
             for line_index in range(0, production_line_list.size()):
                 prod_line = production_line_list.get(position = line_index)
                 if prod_line != None:
@@ -178,20 +188,24 @@ class Gui:
                 
                 assembled = False
                 while assembled == False:
+                    lines_info = []
                     for line_index in range(0, production_line_list.size()):
                         prod_line = production_line_list.get(position = line_index)
                         if prod_line.pending.size() > 0:
                             if prod_line.pending.get(position = 0) > prod_line.position:
                                 print("Moviendo linea", prod_line.number, "1 espacio para adelante")
+                                lines_info.append("Moviendo 1 espacio para adelante")
                                 prod_line.position += 1
                             elif prod_line.pending.get(position = 0) < prod_line.position:
                                 print("Moviendo linea", prod_line.number, "1 espacio para atras")
+                                lines_info.append("Moviendo 1 espacio para atras")
                                 prod_line.position -= 1
                             else:
                                 # Ensamblar
                                 if prod_line.assemble == True:
                                     # sleep assemble time
                                     print("Ensamblando linea:", prod_line.number)
+                                    lines_info.append("Ensamblando linea")
                                     if prod_line.missing_assembly_time == 0:
                                         prod_line.assemble = False
                                         assembled = True
@@ -201,7 +215,15 @@ class Gui:
                                         prod_line.missing_assembly_time -= 1
                                 else:
                                     print("Linea", prod_line.number, "no hacer nada")
+                                    lines_info.append("no hacer nada")
+                        else:
+                            print("- linea", prod_line.number)
+                            lines_info.append("-")
                     print("-----------")
+                    self.counter += 1
                     time.sleep(1)
+                    self.tv.insert('', 'end', text=str(self.counter), values=lines_info)
+                    self.tv.update()
+                    self.tv.yview_moveto(1)
         
         # 112 -> p
