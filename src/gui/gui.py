@@ -8,6 +8,7 @@ from src.models.project_singleton import *
 from src.controllers.machine_controller import *
 from src.controllers.simulation_controller import *
 from src.list.generic.g_list import *
+from commons.graph import *
 
 class Gui:
 
@@ -258,5 +259,6 @@ class Gui:
                     self.tv.update()
                     self.tv.yview_moveto(1)
 
+            Graph().build_graph(product = product)
         messagebox.showinfo("Fin", "Han terminado todos los ensamblajes")
         # 112 -> p
