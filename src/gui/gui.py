@@ -113,6 +113,11 @@ class Gui:
 
         # each product
         for i in range(0, products_list.size()):
+            for line_index in range(0, production_line_list.size()):
+                prod_line = production_line_list.get(position = line_index)
+                if prod_line != None:
+                    production_line_list.get(position = line_index).position = 0
+
             print("PRODUCT ----------", i)
             product = products_list.get(position = i)
             instructions_list = GList()
@@ -190,7 +195,7 @@ class Gui:
                                     prod_line.assemble = False
                                     assembled = True
                                     prod_line.pending.delete(position = 0)
-
+                    print("-----------")
                     time.sleep(1)
         
         # 112 -> p
