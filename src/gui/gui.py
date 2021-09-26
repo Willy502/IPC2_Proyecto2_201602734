@@ -200,7 +200,8 @@ class Gui:
                 if p_line != None:
                     #print("adding", component, "to line", line)
                     production_line_list.search(number = int(line)).pending.add(int(component))
-
+            
+            prod_instructions_glist = GList()
             for index in range(0, instructions_list.size()):
                 letters_list = GList()
                 for letter in instructions_list.get(position = index):
@@ -223,6 +224,8 @@ class Gui:
                 assembled = False
                 while assembled == False:
                     lines_info = []
+                    line_glist_info = GList()
+                    line_glist_info.add(str(self.counter + 1))
                     for line_index in range(0, production_line_list.size()):
                         prod_line = production_line_list.get(position = line_index)
                         if prod_line.pending.size() > 0:
@@ -230,16 +233,19 @@ class Gui:
                                 print("Moviendo linea", prod_line.number, "1 espacio para adelante")
                                 prod_line.position += 1
                                 lines_info.append("Mover brazo - componente " + str(prod_line.position))
+                                line_glist_info.add("Mover brazo - componente " + str(prod_line.position))
                             elif prod_line.pending.get(position = 0) < prod_line.position:
                                 print("Moviendo linea", prod_line.number, "1 espacio para atras")
                                 prod_line.position -= 1
                                 lines_info.append("Mover brazo - componente " + str(prod_line.position))
+                                line_glist_info.add("Mover brazo - componente " + str(prod_line.position))
                             else:
                                 # Ensamblar
                                 if prod_line.assemble == True:
                                     # sleep assemble time
                                     print("Ensamblando en linea:", prod_line.number)
                                     lines_info.append("Ensamblar - componente " + str(prod_line.pending.get(position = 0)))
+                                    line_glist_info.add("Ensamblar - componente " + str(prod_line.pending.get(position = 0)))
                                     if prod_line.missing_assembly_time == 0:
                                         prod_line.assemble = False
                                         assembled = True
@@ -250,10 +256,13 @@ class Gui:
                                 else:
                                     print("Linea", prod_line.number, "no hacer nada")
                                     lines_info.append("no hacer nada")
+                                    line_glist_info.add("no hacer nada")
                         else:
                             print("- linea", prod_line.number)
                             lines_info.append("-")
+                            line_glist_info.add("-")
                     print("-----------")
+                    prod_instructions_glist.add(line_glist_info)
                     self.counter += 1
                     time.sleep(1)
                     self.tv.insert('', 'end', text=str(self.counter), values=lines_info)
@@ -261,5 +270,5 @@ class Gui:
                     self.tv.yview_moveto(1)
 
             Graph().build_graph(product = product)
-            Html().build_html_table(product = product, machine = machine)
+            Html().build_html_table(product = product, machine = machine, instructions = prod_instructions_glist)
         messagebox.showinfo("Fin", "Han terminado todos los ensamblajes")

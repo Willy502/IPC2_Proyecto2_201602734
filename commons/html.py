@@ -3,10 +3,10 @@ import os
 
 class Html:
 
-    def build_html_table(self, product, machine):
+    def build_html_table(self, product, machine, instructions):
         
         report = ''
-        report += '<div class="col-4">\n'
+        report += '<div class="col-12">\n'
         report += '<table class="table">\n'
         report += '<thead>\n'
         report += "<tr>\n"
@@ -16,6 +16,11 @@ class Html:
         report += "</tr>\n"
         report += '</thead>\n'
         report += '<tbody>\n'
+        for i in range(0, instructions.size()):
+            report += '<tr>\n'
+            for index in range(0, instructions.get(i).size()):
+                report += "<td>" + str(instructions.get(i).get(position = index)) + "</td>\n"
+            report += '</tr>\n'
         report += '</tbody>\n'
         report += '</table>\n'
         report += '</div>\n'
