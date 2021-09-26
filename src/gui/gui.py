@@ -10,6 +10,7 @@ from src.controllers.simulation_controller import *
 from src.list.generic.g_list import *
 from commons.graph import *
 from commons.html import *
+from commons.out import *
 
 class Gui:
 
@@ -147,11 +148,14 @@ class Gui:
         position_list = GList()
 
         # each product
+        products_glist = GList()
+        products_instructions_glist = GList()
         for i in range(0, products_list.size()):
             if product_index != None:
                 if product_index != i:
                     continue
             product = products_list.get(position = i)
+            products_glist.add(product)
             messagebox.showinfo("Inicio", "Iniciando ensamblaje de " + product.name)
             self.counter = 0
             self.tv.delete(*self.tv.get_children())
@@ -268,7 +272,11 @@ class Gui:
                     self.tv.insert('', 'end', text=str(self.counter), values=lines_info)
                     self.tv.update()
                     self.tv.yview_moveto(1)
-
+            products_instructions_glist.add(prod_instructions_glist)
             Graph().build_graph(product = product)
             Html().build_html_table(product = product, machine = machine, instructions = prod_instructions_glist)
+        if product_index is None:
+            Out().build_output_xml(products_list = products_glist, instructions_list = products_instructions_glist, nombre_simulacion = simulation.name)
+        else:
+            Out().build_output_xml(products_list = products_glist, instructions_list = products_instructions_glist)
         messagebox.showinfo("Fin", "Han terminado todos los ensamblajes")
