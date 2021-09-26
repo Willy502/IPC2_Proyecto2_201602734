@@ -195,6 +195,8 @@ class Gui:
                                     prod_line.assemble = False
                                     assembled = True
                                     prod_line.pending.delete(position = 0)
+                                else:
+                                    print("Linea", prod_line.number, "no hacer nada")
                     print("-----------")
                     time.sleep(1)
         
